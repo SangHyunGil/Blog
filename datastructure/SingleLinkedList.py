@@ -1,10 +1,9 @@
 import sys
-from itertools import permutations, takewhile
+from itertools import permutations
 input = sys.stdin.readline
 
 class Node():
     def __init__(self, data):
-        self.prev = None
         self.data = data
         self.next = None
 
@@ -15,9 +14,6 @@ class SingleLinkedList():
     def __init__(self):
         self.head = Node("dummy")
         self.size = 0
-        self.tail = Node("dummy")
-        self.head.next = self.tail
-        self.tail.prev = self.head
 
     def sizes(self):
         return self.size
@@ -29,83 +25,53 @@ class SingleLinkedList():
         if self.size == 0 or idx >= self.size :
             return IndexError
         else:
-            if (self.size - idx) > idx:
-                store = self.head
-                for i in range(idx):
-                    store = store.next
-
-            else:
-                store = self.tail
-                for i in range(idx):
-                    store = store.prev
-
+            store = self.head
+            for i in range(idx):
+                store = store.next
             return store
 
     def appendleft(self, data):
         newNode = Node(data)
         store = self.head.next
-        # head와 양방향 연결
+        # head next 연결
         self.head.next = newNode
-        newNode.prev = self.head
-        # next node와 양방향 연결
-        store.prev = newNode
         newNode.next = store
-        
         self.size += 1
 
     def append(self, data):
         newNode = Node(data)
-        store = self.tail.prev
-        # tail과 양방향 연결
-        newNode.next = self.tail
-        self.tail.prev = newNode
-        # prev node와 양방향 연결
+        # 조회
+        store = self.head
+        while store.next != None:
+            store = store.next
+        # 연결
         store.next = newNode
-        newNode.prev = store
-        
         self.size += 1
 
     def insert(self, idx, data):
         if idx >= self.size:
             return IndexError
-        else:
-            newNode = Node(data)
-            if (self.size - idx) > idx:
-                store = self.head
-                for i in range(idx):
-                    store = store.next
-
-            else:
-                store = self.tail
-                for i in range(self.size-idx+1):
-                    store = store.prev
-
-            temp = store.next
-            # 중간에 양방향 연결
-            store.next = newNode
-            newNode.prev = store
-            newNode.next = temp
-            temp.prev = newNode
-
+        newNode = Node(data)
+        # 조회
+        store = self.head
+        for i in range(idx):
+            store = store.next
+        # 연결
+        temp = store.next
+        store.next = newNode
+        newNode.next = temp
 
     def delete(self, idx):
         if self.size == 0 or idx >= self.size:
             return IndexError
         else:
-            if (self.size - idx) > idx:
-                store = self.head
-                for i in range(idx):
-                    store = store.next
-
-            else:
-                store = self.tail
-                for i in range(idx):
-                    store = store.prev
-
+            # 조회
+            store = self.head
+            for i in range(idx):
+                store = store.next
+            # 연결
             temp = store.next.next
             store.next = temp
-            temp.prev = store
-
             self.size -= 1
 
     def __str__(self):
